@@ -34,7 +34,7 @@ public class Parser {
 		if (this.hasMoreCommands()) { 
 			String tmp = stdin.nextLine();
 			tmp = tmp.trim();
-			while (this.hasMoreCommands() && (tmp.equals("") || tmp.equals("\n") || tmp.startsWith("//")) || tmp.length() <= 1) {
+			while (this.hasMoreCommands() && (tmp.equals("") || tmp.equals("\n") || tmp.startsWith("//"))) {
 				tmp = stdin.nextLine();
 				tmp = tmp.trim();
 			}
@@ -79,7 +79,6 @@ public class Parser {
 	
 	public String comp() { 
 		if (this.commandType() == "C_COMMAND") { 
-			String[] split = currentCommand.split("[=|;]+");
 			if (currentCommand.contains("="))  {
 				String tmp = currentCommand.substring(currentCommand.lastIndexOf("=") + 1, currentCommand.length());
 				if (tmp.contains(";")) { 
@@ -87,8 +86,13 @@ public class Parser {
 				}
 				else return tmp;
 			}
-			else 
-				return split[0];
+			else {
+				if (currentCommand.contains(";"))  { 
+					return currentCommand.substring(0, currentCommand.lastIndexOf(";")); 
+				}
+				else 
+					return currentCommand;
+			}
 		}
 		else return "Nope";
 	}

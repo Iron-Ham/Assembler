@@ -71,18 +71,7 @@ public class Code {
 	
 	static public String comp(String d) {
 		String out = new String();
-		if (d.length() > 2) {
-			if (d.charAt(1) == '|') { 
-				if (d.charAt(2) == 'M') { 
-					out = "1010101";
-					return out;
-				}
-				else if (d.charAt(2) == 'A') { 
-					out = "0010101";
-					return out;
-				}
-			}
-		}
+		
 		switch(d) {
 		case "null":
 			out = "";
