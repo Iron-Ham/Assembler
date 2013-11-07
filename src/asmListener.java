@@ -78,5 +78,46 @@ public class asmListener implements ActionListener {
 			}
 		}
 	}
+	public void passFile(String s) { 
+		frame.getInFile().setText(s);
+		File file = new File(s);
+		p = new Parser(file);
+		frame.getData().clear();
+		while(p.hasMoreCommands()){
+			p.advance();
+			frame.getData().addElement(p.currentCommand);
+		}
+		
+		FileWriter fw;
+		p.reset();
+		String fileName = s;
+		fileName = fileName.substring(0, fileName.lastIndexOf("."));
+		fileName = fileName + ".hack";
+		try {
+			fw = new FileWriter(new File(fileName));
+			BufferedWriter writer = new BufferedWriter(fw);
+			while(p.hasMoreCommands()) { 
+				p.advance();
+				if(p.commandType() == "C_COMMAND") {
+					writer.write("111" + Code.comp(p.comp()) + Code.dest(p.dest()) + Code.jump(p.jump()) + "\n");
+				}
+				if(p.commandType() == "A_COMMAND") {
+					String binary = new String();
+					binary = Integer.toBinaryString(Integer.valueOf(p.symbol()));
+					String out = new String();
+					for(int i = 0; i < 16-binary.length(); i++)
+						out = out + "0";
+					writer.write(out + binary + "\n");
+				}
+				
+				//I'm not quite sure what to do with L_Commands? 
+			}
+			writer.flush();
+			writer.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
 	
 }
