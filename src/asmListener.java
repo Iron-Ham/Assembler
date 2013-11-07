@@ -4,18 +4,16 @@ import java.io.*;
 import javax.swing.*;
 
 public class asmListener implements ActionListener {
-	//Bringing up a standard open dialog only requires two lines of code
-	//final JFileChooser fc = new JFileChooser();
-	//int returnVal = fc.showOpenDialog(aComponent);
-	
 	Parser p;
 	asmFrame frame;
 	JFileChooser fc; 
+	SymbolTable st;
 	
-	public asmListener(asmFrame f) {
+	public asmListener(asmFrame f, SymbolTable st) {
 		//Constructor
 		frame = f;
 		fc = new JFileChooser();
+		this.st = st;
 	}
 	
 	@Override
@@ -50,35 +48,58 @@ public class asmListener implements ActionListener {
 				String fileName = fc.getSelectedFile().getAbsolutePath();
 				fileName = fileName.substring(0, fileName.lastIndexOf("."));
 				fileName = fileName + ".hack";
-				try {
-					fw = new FileWriter(new File(fileName));
-					BufferedWriter writer = new BufferedWriter(fw);
-					while(p.hasMoreCommands()) { 
-						p.advance();
-						if(p.commandType() == "C_COMMAND") {
-							writer.write("111" + Code.comp(p.comp()) + Code.dest(p.dest()) + Code.jump(p.jump()) + "\n");
-						}
-						if(p.commandType() == "A_COMMAND") {
-							String binary = new String();
-							binary = Integer.toBinaryString(Integer.valueOf(p.symbol()));
-							String out = new String();
-							for(int i = 0; i < 16-binary.length(); i++)
-								out = out + "0";
-							writer.write(out + binary + "\n");
-						}
-						
-						//I'm not quite sure what to do with L_Commands? 
-					}
-					writer.flush();
-					writer.close();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				firstPass();
+				secondPass(fileName);
 				
 			}
 		}
 	}
+	
+	public void firstPass() { 
+		p.reset();
+		int count = -1;
+		String symbol = null;
+		while (p.hasMoreCommands()) {
+			p.advance();
+			if (p.commandType() == "L_COMMAND") { 
+				symbol = p.symbol();
+				st.addEntry(symbol, count +1);
+			}
+			else 
+				count++;
+		}
+		p.reset();
+	}
+	
+	public void secondPass(String fileName) { 
+		p.reset();
+		FileWriter fw;
+		BufferedWriter writer;
+		try {
+			fw = new FileWriter(new File(fileName));
+			writer = new BufferedWriter(fw);
+			while(p.hasMoreCommands()) { 
+				p.advance();
+				if(p.commandType() == "C_COMMAND") {
+					writer.write("111" + Code.comp(p.comp()) + Code.dest(p.dest()) + Code.jump(p.jump()) + "\n");
+				}
+				if(p.commandType() == "A_COMMAND") {
+					String binary = new String();
+					binary = Integer.toBinaryString(Integer.valueOf(p.symbol()));
+					String out = new String();
+					for(int i = 0; i < 16-binary.length(); i++)
+						out = out + "0";
+					writer.write(out + binary + "\n");
+				}
+			}
+			writer.flush();
+			writer.close();
+		} catch (IOException e){ 
+			e.printStackTrace();
+		}
+		p.reset();
+	}
+	
 	public void passFile(String s) { 
 		//This method is just used in order to pass files from the command line. 
 		//It is largely a copy of the actionPerformed method.

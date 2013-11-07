@@ -37,6 +37,6 @@ public class SymbolTable {
 		if (this.contains(symbol)) { 
 			return table.get(symbol);
 		}
-		else return -1;
+		else return -1; //if symbol doesn't exist, return -1
 	}
 }
