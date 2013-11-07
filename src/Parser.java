@@ -44,22 +44,27 @@ public class Parser {
 	}
 	
 	public String commandType() { 
+		//Determines what type of command the current command is.
 		boolean numCheck;
 		String a = "A_COMMAND";
 		String c = "C_COMMAND";
 		String l = "L_COMMAND";
+		//A command start with @
 		if (currentCommand.startsWith("@")) {
 			return a;
 		}
+		//L commands start with (
 		if (currentCommand.startsWith("(")) { 
 			return l;
 		}
 		else 
+			//All other commands are c commands
 			return c;
 		
 	}
 	
 	public String symbol() {
+		//returns symbol for symbol table in next lab
 		if (this.commandType() != "C_COMMAND") {
 			return currentCommand.substring(1); 
 		}
@@ -67,6 +72,7 @@ public class Parser {
 	}
 	
 	public String dest() { 
+		//returns the destination bits d1 d2 d3
 		if (this.commandType() == "C_COMMAND") {
 			if (currentCommand.contains("=")) {
 				String[] split = currentCommand.split("[=|;]+");
@@ -78,10 +84,14 @@ public class Parser {
 	}
 	
 	public String comp() { 
+		//This was the most difficult method to implement because I could not use a split as before. 
+		//Using [=|;]+ as a split regex would cause a split on the "|" character, instead of that character being treated
+		//as an or. 
+		
 		if (this.commandType() == "C_COMMAND") { 
 			if (currentCommand.contains("="))  {
 				String tmp = currentCommand.substring(currentCommand.lastIndexOf("=") + 1, currentCommand.length());
-				if (tmp.contains(";")) { 
+				if (tmp.contains(";")) {  //Added to pass the uberHack.asm test
 					return tmp.substring(0, tmp.lastIndexOf(";"));
 				}
 				else return tmp;
@@ -91,6 +101,7 @@ public class Parser {
 					return currentCommand.substring(0, currentCommand.lastIndexOf(";")); 
 				}
 				else 
+					//If it does not contain a semicolon, it is a direct command such as "0", "A", or "D|M"
 					return currentCommand;
 			}
 		}
@@ -98,6 +109,7 @@ public class Parser {
 	}
 	
 	public String jump() { 
+		//Only for c commands
 		if (this.commandType() == "C_COMMAND") { 
 			if (currentCommand.contains(";")) {
 				String[] split = currentCommand.split(";");
@@ -109,7 +121,12 @@ public class Parser {
 		else return "Nope";
 	}
 	
-	public void reset() { 
+	public void reset() {
+		/**
+		 * This is my only method that is not in the original API. I added this method because:
+		 * 			I am using a GUI and once I populate the JList, I need to reset the scanner
+		 * 		 	so I can go through the file again in the assembly stage.
+		 */
 		this.stdin = new Parser(data).stdin;
 	}
 	

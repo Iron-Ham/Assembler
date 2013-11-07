@@ -72,6 +72,9 @@ public class Code {
 	static public String comp(String d) {
 		String out = new String();
 		
+		//Translates the parser's comp() method to binary
+		//Values taken from page 109
+		
 		switch(d) {
 		case "null":
 			out = "";

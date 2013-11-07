@@ -13,6 +13,7 @@ public class asmListener implements ActionListener {
 	JFileChooser fc; 
 	
 	public asmListener(asmFrame f) {
+		//Constructor
 		frame = f;
 		fc = new JFileChooser();
 	}
@@ -79,6 +80,8 @@ public class asmListener implements ActionListener {
 		}
 	}
 	public void passFile(String s) { 
+		//This method is just used in order to pass files from the command line. 
+		//It is largely a copy of the actionPerformed method.
 		frame.getInFile().setText(s);
 		File file = new File(s);
 		p = new Parser(file);
@@ -114,6 +117,7 @@ public class asmListener implements ActionListener {
 			}
 			writer.flush();
 			writer.close();
+			System.exit(0);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
