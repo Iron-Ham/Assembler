@@ -34,6 +34,7 @@ public class asmListener implements ActionListener {
 					
 					p = new Parser(file);
 					frame.getData().clear();
+					frame.getOutData().clear();
 					while(p.hasMoreCommands()) {
 						p.advance();
 						frame.getData().addElement(p.currentCommand);
@@ -82,6 +83,7 @@ public class asmListener implements ActionListener {
 				p.advance();
 				if(p.commandType() == "C_COMMAND") {
 					writer.write("111" + Code.comp(p.comp()) + Code.dest(p.dest()) + Code.jump(p.jump()) + "\n");
+					frame.getOutData().addElement("111" + Code.comp(p.comp()) + Code.dest(p.dest()) + Code.jump(p.jump()));
 				}
 				if(p.commandType() == "A_COMMAND") {
 					String binary = new String();
@@ -90,6 +92,7 @@ public class asmListener implements ActionListener {
 					for(int i = 0; i < 16-binary.length(); i++)
 						out = out + "0";
 					writer.write(out + binary + "\n");
+					frame.getOutData().addElement(out + binary);
 				}
 			}
 			writer.flush();
@@ -98,6 +101,7 @@ public class asmListener implements ActionListener {
 			e.printStackTrace();
 		}
 		p.reset();
+		asmFrame.infoBox("Assembly Complete!", "Assembler v2");
 	}
 	
 	public void passFile(String s) { 
