@@ -9,13 +9,10 @@ import javax.swing.*;
 
 public class asmFrame extends JFrame {
 	
-	/**
-	 * I'm not incredibly experienced in making GUI applications in java. My experience is in Objective-C, which has a
-	 * very simple interface-builder in Xcode. I'm going to use this assembler application to give myself some experience
-	 * in building GUIs in Java, including the use of JPanels, nested layout schemes, and gui models.
+	/*
+	 * This class is the GUI of the assembler. 
 	 */
 	
-	JTextField text;
 	JButton browse;
 	JTextField inFile;
 	JButton assemble;
@@ -39,8 +36,7 @@ public class asmFrame extends JFrame {
 		
 		//Initialization
 		File picture = new File("Extras/Arrow.png");
-		inFile = new JTextField(30); 
-		text = new JTextField(30);
+		inFile = new JTextField(60); 
 		data = new DefaultListModel<String>();
 		browse = new JButton("Browse...");
 		assemble = new JButton("Assemble!");
@@ -64,20 +60,25 @@ public class asmFrame extends JFrame {
 		bottom.add(bottomButtonPanel, BorderLayout.SOUTH);
 		bottom.add(filePanel, BorderLayout.CENTER);
 		
-		//Middle Panel
-		JPanel middle = new JPanel(new BorderLayout()); 
-		JPanel midLeft = new JPanel(new FlowLayout()); 
-		JPanel midRight = new JPanel(new FlowLayout());
+		//Middle Panel; nested
+		JPanel middle = new JPanel(new BorderLayout()); //The primary center panel
 		
-		Dimension size = new Dimension(350, 450);
-		scrollPane.setPreferredSize(size);		
-		midLeft.add(scrollPane); 
+		JPanel midLeft = new JPanel(new FlowLayout()); 	//The panel for the data input
+		JPanel midRight = new JPanel(new FlowLayout());	//Panel for data output
+		
+		Dimension size = new Dimension(350, 450);		//The size of the input and output panels
+		scrollPane.setPreferredSize(size);
+		midLeft.add(scrollPane); 						
+		
 		scrollPane2.setPreferredSize(size);
 		midRight.add(scrollPane2);
+		
+		//Adding all things to the middle panel
 		middle.add(midRight, BorderLayout.EAST);
 		middle.add(midLeft, BorderLayout.WEST);
 		middle.add(arrow, BorderLayout.CENTER);
 		
+		//Adding the panels onto the frame. 
 		add(bottom, BorderLayout.SOUTH);
 		add(middle, BorderLayout.CENTER);
 	}
@@ -105,13 +106,6 @@ public class asmFrame extends JFrame {
 
 	
 	//Generated setters and getters for all variables. 
-	public JTextField getText() {
-		return text;
-	}
-
-	public void setText(JTextField text) {
-		this.text = text;
-	}
 
 	public JButton getBrowse() {
 		return browse;
