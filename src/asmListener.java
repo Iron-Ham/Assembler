@@ -8,12 +8,15 @@ public class asmListener implements ActionListener {
 	asmFrame frame;
 	JFileChooser fc; 
 	SymbolTable st;
+	int var;
 	
 	public asmListener(asmFrame f, SymbolTable st) {
 		//Constructor
 		frame = f;
 		fc = new JFileChooser();
 		this.st = st;
+		var = 16;
+		st = new SymbolTable();
 	}
 	
 	@Override
@@ -70,10 +73,12 @@ public class asmListener implements ActionListener {
 				count++;
 		}
 		p.reset();
+		System.out.println("Finished");
 	}
 	
 	public void secondPass(String fileName) { 
 		p.reset();
+		var++;
 		FileWriter fw;
 		BufferedWriter writer;
 		try {
@@ -86,13 +91,25 @@ public class asmListener implements ActionListener {
 					frame.getOutData().addElement("111" + Code.comp(p.comp()) + Code.dest(p.dest()) + Code.jump(p.jump()));
 				}
 				if(p.commandType() == "A_COMMAND") {
+					String symbol = p.symbol();
+					String aCommand = new String();
+					String code = null;
+					int address;
+					if (isNumeric(symbol)) { 
+						address = Integer.parseInt(symbol);
+					} else { 
+						if (st.contains(symbol)) {
+							address = st.getAddress(symbol);
+						} else { 
+							address = var++;
+							st.addEntry(symbol, address);
+						}
+					}
 					String binary = new String();
-					binary = Integer.toBinaryString(Integer.valueOf(p.symbol()));
-					String out = new String();
-					for(int i = 0; i < 16-binary.length(); i++)
-						out = out + "0";
-					writer.write(out + binary + "\n");
-					frame.getOutData().addElement(out + binary);
+					binary = Integer.toBinaryString(address); 
+					code = setLength(binary, 16); 
+					writer.write(code + "\n"); 
+					frame.getOutData().addElement(code);
 				}
 			}
 			writer.flush();
@@ -123,6 +140,17 @@ public class asmListener implements ActionListener {
 		fileName = fileName + ".hack";
 		firstPass();
 		secondPass(fileName);
+	}
+	
+	public boolean isNumeric (String str) { 
+		return str.matches("-?\\d+(\\.\\d+)?");
+	}
+	public String setLength(String str, int num) { 
+		int zeroNum = num - str.length(); 
+		StringBuilder zeros = new StringBuilder(); //Wow, I haven't used these since CPS180! 
+		for (int i = zeroNum; i > 0; i--)
+			zeros.append(str);
+		return zeros.toString();
 	}
 	
 }
