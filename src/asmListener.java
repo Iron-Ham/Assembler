@@ -8,12 +8,14 @@ public class asmListener implements ActionListener {
 	asmFrame frame;
 	JFileChooser fc; 
 	SymbolTable st;
+	int var;
 	
 	public asmListener(asmFrame f, SymbolTable st) {
 		//Constructor
 		frame = f;
 		fc = new JFileChooser();
 		this.st = st;
+		var = 16;
 	}
 	
 	@Override
@@ -58,13 +60,13 @@ public class asmListener implements ActionListener {
 	
 	public void firstPass() { 
 		p.reset();
-		int count = -1;
+		int count = 0;
 		String symbol = null;
 		while (p.hasMoreCommands()) {
 			p.advance();
 			if (p.commandType() == "L_COMMAND") { 
 				symbol = p.symbol();
-				st.addEntry(symbol, count +1);
+				st.addEntry(symbol, count);
 			}
 			else 
 				count++;
@@ -87,7 +89,20 @@ public class asmListener implements ActionListener {
 				}
 				if(p.commandType() == "A_COMMAND") {
 					String binary = new String();
-					binary = Integer.toBinaryString(Integer.valueOf(p.symbol()));
+					if (isNumeric(p.symbol())) {
+						binary = Integer.toBinaryString(Integer.valueOf(p.symbol()));
+					}
+					else { 
+						if (st.contains(p.symbol())) { 
+							binary = Integer.toBinaryString(st.getAddress(p.symbol()));
+						}
+						else {
+							st.addEntry(p.symbol(), var);
+							var++;
+							binary = Integer.toBinaryString(st.getAddress(p.symbol()));
+						}
+					}
+					
 					String out = new String();
 					for(int i = 0; i < 16-binary.length(); i++)
 						out = out + "0";
@@ -102,6 +117,7 @@ public class asmListener implements ActionListener {
 		}
 		p.reset();
 		asmFrame.infoBox("Assembly Complete!", "Assembler v2");
+		st.printKeys();
 	}
 	
 	public void passFile(String s) { 
@@ -123,6 +139,11 @@ public class asmListener implements ActionListener {
 		fileName = fileName + ".hack";
 		firstPass();
 		secondPass(fileName);
+	}
+	
+	
+	public boolean isNumeric(String str) {
+		return str.matches("-?\\d+(\\.\\d+)?");
 	}
 	
 }

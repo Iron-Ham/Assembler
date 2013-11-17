@@ -62,14 +62,16 @@ public class Parser {
 			return c;
 		
 	}
-	
-	public String symbol() {
-		//returns symbol for symbol table in next lab
-		if (this.commandType() != "C_COMMAND") {
-			return currentCommand.substring(1); 
-		}
-		else return "Nope";
-	}
+    public String symbol() {
+        String symbol = null;
+        if (this.commandType() == "A_COMMAND" ) {
+            symbol = currentCommand.substring(1, currentCommand.length());
+        } else if (this.commandType() == "L_COMMAND" ) {
+            symbol = currentCommand.substring(1, currentCommand.length() - 1);
+        }
+        else { }
+        return symbol;
+    }
 	
 	public String dest() { 
 		//returns the destination bits d1 d2 d3

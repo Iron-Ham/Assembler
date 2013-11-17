@@ -1,4 +1,7 @@
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -26,6 +29,15 @@ public class SymbolTable {
 		//allows for addition of new symbol
 		table.put(symbol, address);
 	}
+	
+    public void printKeys() {
+        System.out.println("start");
+        List<String> keys = new ArrayList<String>(table.keySet());
+        for (String key : keys) { 
+        	System.out.println(key + ": " + table.get(key));
+        }
+        System.out.println("end");
+    }
 	
 	public boolean contains(String symbol) {
 		//checks to see if symbol exists in table
